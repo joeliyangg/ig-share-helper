@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IG Share Helper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;600;700&family=Fraunces:opsz,wght@9..144,500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1d1914;
+        --paper: #f6efe5;
+        --paper-2: #efe2d2;
+        --accent: #0c6b5a;
+        --accent-2: #d96c35;
+        --muted: #6f6257;
+        --shadow: rgba(22, 16, 12, 0.22);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Chivo", "Helvetica Neue", Arial, sans-serif;
+        color: var(--ink);
+        background: radial-gradient(1200px 800px at 10% -10%, #fcebd8, transparent 55%),
+          radial-gradient(900px 700px at 100% 10%, #e7f0e7, transparent 50%),
+          linear-gradient(135deg, #f8f0e4 0%, #f3e7d9 40%, #f0e0d2 100%);
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          125deg,
+          rgba(0, 0, 0, 0.04) 0,
+          rgba(0, 0, 0, 0.04) 1px,
+          transparent 1px,
+          transparent 6px
+        );
+        opacity: 0.25;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 56px 24px 72px;
+        position: relative;
+      }
+
+      .hero {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      h1 {
+        font-family: "Fraunces", "Times New Roman", serif;
+        font-size: clamp(32px, 4vw, 52px);
+        margin: 0;
+        line-height: 1.1;
+      }
+
+      .lead {
+        font-size: 18px;
+        color: var(--muted);
+        max-width: 720px;
+      }
+
+      .panel {
+        background: var(--paper);
+        border: 2px solid var(--ink);
+        box-shadow: 8px 12px 0 var(--shadow);
+        padding: 24px;
+        display: grid;
+        gap: 20px;
+        position: relative;
+      }
+
+      .panel::after {
+        content: "";
+        position: absolute;
+        top: -14px;
+        right: 24px;
+        width: 140px;
+        height: 28px;
+        background: var(--accent-2);
+        transform: rotate(-3deg);
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      form {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      input[type="url"],
+      input[type="text"] {
+        flex: 1;
+        border: 2px solid var(--ink);
+        padding: 12px 14px;
+        font-size: 16px;
+        background: #fffdfa;
+        color: var(--ink);
+      }
+
+      input::placeholder {
+        color: #9a8d82;
+      }
+
+      .primary,
+      .ghost {
+        font-family: "Chivo", "Helvetica Neue", Arial, sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border: 2px solid var(--ink);
+        background: var(--accent);
+        color: #fdf7f0;
+        padding: 12px 18px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .ghost {
+        background: transparent;
+        color: var(--ink);
+      }
+
+      .primary:hover,
+      .ghost:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .ghost.disabled,
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .hint {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .output {
+        display: grid;
+        gap: 8px;
+      }
+
+      .output-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .status {
+        border-left: 4px solid var(--accent);
+        padding: 10px 12px;
+        background: #fdf8f2;
+        font-size: 14px;
+      }
+
+      .status.warn {
+        border-color: #9b4f2d;
+        background: #f8efe6;
+      }
+
+      .status.error {
+        border-color: #8c2f1e;
+        background: #f7e6df;
+      }
+
+      .status.success {
+        border-color: #2f7d57;
+        background: #eaf4ee;
+      }
+
+      .tips {
+        margin-top: 32px;
+        background: var(--paper-2);
+        border: 2px dashed var(--ink);
+        padding: 20px 24px;
+      }
+
+      .tips h2 {
+        margin: 0 0 12px;
+        font-family: "Fraunces", "Times New Roman", serif;
+        font-size: 24px;
+      }
+
+      .tips ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .footer {
+        margin-top: 36px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      [data-animate] {
+        animation: rise 0.7s ease forwards;
+        opacity: 0;
+        transform: translateY(16px);
+        animation-delay: var(--delay, 0ms);
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          padding: 40px 18px 64px;
+        }
+
+        .input-row {
+          flex-direction: column;
+        }
+
+        .primary,
+        .ghost {
+          width: 100%;
+          text-align: center;
+        }
+
+        .panel::after {
+          right: 12px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        [data-animate] {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+
+        .primary,
+        .ghost {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero" data-animate style="--delay: 0ms">
+        <p class="eyebrow">IG Share Helper</p>
+        <h1>Share public Instagram videos without downloading</h1>
+        <p class="lead">
+          Paste an Instagram link and generate a share page. This tool does not
+          bypass login requirements. It simply provides a clear, shareable handoff
+          for viewers.
+        </p>
+      </header>
+
+      <section class="panel" data-animate style="--delay: 120ms">
+        <form id="linkForm">
+          <label for="igUrl">Instagram URL</label>
+          <div class="input-row">
+            <input
+              id="igUrl"
+              name="igUrl"
+              type="url"
+              placeholder="https://www.instagram.com/reel/..."
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="primary">Build share link</button>
+          </div>
+          <p class="hint">
+            We do not fetch or scrape Instagram. We only format and share links.
+          </p>
+        </form>
+
+        <div class="actions">
+          <a
+            id="openLink"
+            class="ghost disabled"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Open in browser</a
+          >
+          <button id="copyIg" type="button" class="ghost" disabled>
+            Copy IG link
+          </button>
+          <button id="copyShare" type="button" class="ghost" disabled>
+            Copy share page link
+          </button>
+        </div>
+
+        <div class="output">
+          <div class="output-label">Share page link</div>
+          <input
+            id="shareOutput"
+            type="text"
+            placeholder="Share link appears here"
+            readonly
+          />
+        </div>
+
+        <div id="status" class="status info">Paste a link to begin.</div>
+      </section>
+
+      <section class="tips" data-animate style="--delay: 200ms">
+        <h2>What viewers can expect</h2>
+        <ul>
+          <li>Public posts may open directly or show a login wall.</li>
+          <li>Private accounts, age-gated content, or region locks will block viewing.</li>
+          <li>If a login wall appears, ask the author for an alternate platform link.</li>
+        </ul>
+      </section>
+
+      <footer class="footer" data-animate style="--delay: 260ms">
+        This helper is for sharing links you have permission to distribute. It does
+        not remove platform restrictions.
+      </footer>
+    </main>
+
+    <script>
+      const form = document.getElementById("linkForm");
+      const igUrlInput = document.getElementById("igUrl");
+      const openLink = document.getElementById("openLink");
+      const copyIg = document.getElementById("copyIg");
+      const copyShare = document.getElementById("copyShare");
+      const shareOutput = document.getElementById("shareOutput");
+      const statusEl = document.getElementById("status");
+
+      let currentUrl = "";
+      let currentShare = "";
+
+      const allowedHosts = ["instagram.com", "www.instagram.com", "instagr.am"];
+
+      const setStatus = (message, tone = "info") => {
+        statusEl.textContent = message;
+        statusEl.className = `status ${tone}`;
+      };
+
+      const normalizeUrl = (raw) => {
+        if (!raw) {
+          throw new Error("Please paste a link.");
+        }
+
+        let candidate = raw.trim();
+        if (!/^https?:\/\//i.test(candidate)) {
+          candidate = `https://${candidate}`;
+        }
+
+        let parsed;
+        try {
+          parsed = new URL(candidate);
+        } catch (err) {
+          throw new Error("That does not look like a valid URL.");
+        }
+
+        const host = parsed.hostname.toLowerCase();
+        if (!allowedHosts.includes(host)) {
+          throw new Error("Only Instagram links are supported.");
+        }
+
+        if (host === "instagr.am") {
+          parsed.hostname = "www.instagram.com";
+        }
+
+        return parsed.toString();
+      };
+
+      const buildShareLink = (url) => {
+        const base = window.location.href.split("?")[0].split("#")[0];
+        return `${base}?u=${encodeURIComponent(url)}`;
+      };
+
+      const updateUI = (url) => {
+        currentUrl = url;
+        currentShare = buildShareLink(url);
+
+        shareOutput.value = currentShare;
+        openLink.classList.remove("disabled");
+        openLink.href = url;
+        copyIg.disabled = false;
+        copyShare.disabled = false;
+
+        setStatus(
+          "Share link ready. Note: Instagram may still require login.",
+          "success"
+        );
+      };
+
+      const copyText = async (value, label) => {
+        if (!value) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(value);
+          setStatus(`${label} copied to clipboard.`, "success");
+        } catch (err) {
+          const temp = document.createElement("textarea");
+          temp.value = value;
+          temp.style.position = "fixed";
+          temp.style.opacity = "0";
+          document.body.appendChild(temp);
+          temp.focus();
+          temp.select();
+
+          try {
+            document.execCommand("copy");
+            setStatus(`${label} copied to clipboard.`, "success");
+          } catch (copyErr) {
+            setStatus("Copy failed. Please select and copy manually.", "warn");
+          }
+
+          document.body.removeChild(temp);
+        }
+      };
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        try {
+          const normalized = normalizeUrl(igUrlInput.value);
+          updateUI(normalized);
+        } catch (err) {
+          setStatus(err.message, "error");
+        }
+      });
+
+      copyIg.addEventListener("click", () => {
+        copyText(currentUrl, "Instagram link");
+      });
+
+      copyShare.addEventListener("click", () => {
+        copyText(currentShare, "Share page link");
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const initial = params.get("u") || params.get("url");
+      if (initial) {
+        igUrlInput.value = initial;
+        try {
+          const normalized = normalizeUrl(initial);
+          updateUI(normalized);
+        } catch (err) {
+          setStatus("The shared link is invalid.", "error");
+        }
+      }
+    </script>
+  </body>
+</html>
